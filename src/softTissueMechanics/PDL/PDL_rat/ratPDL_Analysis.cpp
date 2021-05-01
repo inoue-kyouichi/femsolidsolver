@@ -256,11 +256,11 @@ void ratPDL::RigidElasticInteraction::inputRigidBodyInterface()
   for(int i=0;i<numOfCP;i++) iCP(CP(i))=i;
 
   base_label = "/RigidBody";
-  label = base_label + "/Force";
-  if ( !tp.getInspectedVector(label,FU_input,3)){
-    cout << label << " is not found" << endl;
-    exit(0);
-  }
+  // label = base_label + "/Force";
+  // if ( !tp.getInspectedVector(label,FU_input,3)){
+  //   cout << label << " is not found" << endl;
+  //   exit(0);
+  // }
 
   label = base_label + "/ForcePoint";
   if ( !tp.getInspectedVector(label,FUpoint,3)){
