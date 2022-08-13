@@ -16,7 +16,7 @@
  * @detail Fem solid analysis with displacement control.
  */
 
-#include "Fem.h"
+#include "fem.h"
 #include "rigidBody.h"
 
 #include "glog/logging.h"

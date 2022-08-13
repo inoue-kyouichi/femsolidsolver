@@ -20,7 +20,7 @@
 
 // Nagrath et al., Compt. Methods Appl. Mech. Engrg., 194 (2005), 4565-4587
 
-#include "FEM.h"
+#include "fem.h"
 
 class SignedDistanceFunction{
   public:

@@ -4,6 +4,7 @@ find_path(EIGEN_INCLUDE_DIR Eigen/Core
     ENV EIGEN_INCLUDE_DIR
     ${EIGEN_DIR}
     /usr
+    /usr/include/eigen3
     /usr/local
   PATH_SUFFIXES
     include

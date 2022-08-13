@@ -44,7 +44,7 @@ if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
 endif("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
 
 #change default install prefix
-set(INSTALL_DIR "/usr/local/CoRotationalShell")
+set(INSTALL_DIR "/usr/local/SolidFEM")
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX ${INSTALL_DIR} CACHE PATH "..." FORCE)
 endif()
@@ -83,8 +83,14 @@ find_package(Eigen REQUIRED)
 include_directories(${EIGEN_INCLUDE_DIR})
 
 # MKL
-find_package(MKL)
+set(MKL_ARCH "intel64")
+set(MKL_LINK "static")
+set(MKL_INTERFACE "lp64")
+set(MKL_THREADING "intel_thread")
+set(MKL_MPI "intelmpi")
+find_package(MKL REQUIRED C CXX)
 include_directories(${MKL_INCLUDE_DIR})
+MESSAGE(${MKL_LIBRARIES})
 
 #######
 # Sub Directories
