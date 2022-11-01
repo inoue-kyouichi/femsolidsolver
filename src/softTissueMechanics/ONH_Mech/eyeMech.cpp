@@ -136,6 +136,9 @@ void EYE_Mechanics::EyeMech::calcStressTensor()
       case MaterialType::SCLERA:
         calcStressTensor_NeoHookean_element_spatialForm(ic,100e3,0.49e0,U,true);
       break;
+      case MaterialType::PRELAMINA:
+        calcStressTensor_NeoHookean_element_spatialForm(ic,10000/2.98,0.49e0,U,true);
+      break;
       default:
         cout << "undefined material. Exit.." << endl;
         exit(1);

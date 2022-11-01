@@ -133,7 +133,7 @@ void EYE_Mechanics::EyeMech::inputMaterialInfo(TextParser &tp)
   }
 
   string tmp,dtmp;
-  for(int i=0;i<numOfBoundaryElm;i++){
+  for(int i=0;i<numOfElm;i++){
     getline(file,str);
     element[i].materialType = stoi(str);
   }
@@ -166,8 +166,12 @@ void EYE_Mechanics::EyeMech::inputSurfaceInfo(TextParser &tp)
   boundaryElement.resize(numOfBoundaryElm);
 
   for(int ic=0;ic<numOfBoundaryElm;ic++){ 
-    boundaryElement[ic].node.resize(4);
-    boundaryElement[ic].meshType = VTK_QUAD;
+    // meshtype_立方体ボリュームメッシュ、サーフェスが四角形
+    // boundaryElement[ic].node.resize(4);
+    // boundaryElement[ic].meshType = VTK_QUAD;
+    // meshtype_四面体ボリュームメッシュ、サーフェスが三角形
+    boundaryElement[ic].node.resize(3);
+    boundaryElement[ic].meshType = VTK_TRIANGLE;
   }
 
   ifstream file(D_file);

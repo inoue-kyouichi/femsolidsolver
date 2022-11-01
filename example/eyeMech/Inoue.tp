@@ -1,0 +1,29 @@
+Domain
+{
+  inputDir   = "geometry_Inoue"
+  nodeFile      = "node.dat"
+  elementFile   = "element.dat"
+  meshTypeFile   = "elementMeshType.dat"
+  materialTypeFile = "elementMaterialType.dat"
+  dirichletFile = "dirichlet.dat"
+  innerSurfaceFile="innerSurface.dat"
+}
+
+Output
+{
+  outputFormat = "vtk"
+  outputDir    = "x_0"
+  fileName     = "test"
+}
+
+solver
+{
+  boundaryPressure = 100 // 
+  dataNumber=0
+  maxIteration = 1
+  NR_iteration = 100000
+  NR_tolerance = 3 //1e-4
+  Restart =0 //0:no, 1:yes
+  OMPnumThreads = 8
+  relaxation=1e-1
+}

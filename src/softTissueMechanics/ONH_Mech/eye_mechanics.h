@@ -26,6 +26,7 @@ namespace EYE_Mechanics {
 typedef enum{
   SCLERA = 0,
   LC = 1,
+  PRELAMINA =2,
   numOfMaterials
 }MaterialType;
 
@@ -64,7 +65,7 @@ class EyeMech : public Fem {
 
   void calcBoundaryForce();
   void calcBoundaryPressure_spatialForm(const int ic,VECTOR1D<ARRAY2D<double>> &Qb,const double boundaryPressure);
-  void boundaryPressure_inGaussIntegral(VECTOR1D<ARRAY2D<double>> &Qb,ARRAY1D<double> &N,ARRAY2D<double> &dNdr,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,const int numOfNodeInElm,const double boundaryPressure,const int weight,const int ic);
+  void boundaryPressure_inGaussIntegral(VECTOR1D<ARRAY2D<double>> &Qb,ARRAY1D<double> &N,ARRAY2D<double> &dNdr,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,const int numOfNodeInElm,const double boundaryPressure,const double weight,const int ic);
 
   void calcStressTensor_NeoHookean_element_spatialForm(const int ic,const double mu,const double Poisson,ARRAY2D<double> &U_tmp,const bool option);
   void NeoHookean_inGaussIntegral(ARRAY2D<double> &dNdr,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,const int numOfNodeInElm,const double mu,const double lambda,const double weight,const int ic,const bool option);

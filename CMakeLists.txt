@@ -10,7 +10,7 @@
 #
 ###################################################################################
 
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.16)
 
 option(enable_OPENMP "Enable OpenMP" ON)
 option(enable_GLOG "Enable GLOG" OFF)

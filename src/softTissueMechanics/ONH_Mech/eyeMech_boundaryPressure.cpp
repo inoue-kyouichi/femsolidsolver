@@ -70,6 +70,12 @@ void EYE_Mechanics::EyeMech::calcBoundaryPressure_spatialForm(const int ic,VECTO
 
 
   switch(boundaryElement[ic].meshType){
+    case VTK_TRIANGLE:
+      ShapeFunction2D::C2D3_N(N,gTri.point[0][0],gTri.point[0][1],gTri.point[0][2]);
+      ShapeFunction2D::C2D3_dNdr(dNdr,gTri.point[0][0],gTri.point[0][1],gTri.point[0][2]);
+      // cout << gTri.weight[0]*5e-1 << endl;
+      boundaryPressure_inGaussIntegral(Qb,N,dNdr,x_current,x_ref,numOfNodeInElm,boundaryPressure,gTri.weight[0]*5e-1,ic);
+      break;
     case VTK_QUAD:
       for(int i1=0;i1<2;i1++){
         for(int i2=0;i2<2;i2++){
@@ -89,7 +95,7 @@ void EYE_Mechanics::EyeMech::calcBoundaryPressure_spatialForm(const int ic,VECTO
 /**
  * @brief tentative
  */
-void EYE_Mechanics::EyeMech::boundaryPressure_inGaussIntegral(VECTOR1D<ARRAY2D<double>> &Qb,ARRAY1D<double> &N,ARRAY2D<double> &dNdr,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,const int numOfNodeInElm,const double boundaryPressure,const int weight,const int ic)
+void EYE_Mechanics::EyeMech::boundaryPressure_inGaussIntegral(VECTOR1D<ARRAY2D<double>> &Qb,ARRAY1D<double> &N,ARRAY2D<double> &dNdr,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,const int numOfNodeInElm,const double boundaryPressure,const double weight,const int ic)
 {
   double dxdr1[3],dxdr2[3],dxdr3[3],Jacobian;
 
