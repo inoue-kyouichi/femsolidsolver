@@ -68,13 +68,14 @@ void muscularHydrostat::Muscle::femSolidAnalysis()
  */
 bool muscularHydrostat::Muscle::NRscheme()
 {
-    double residual,residual0,norm,norm0;
+    double residual,residual0,norm,norm0,min1=0e0,min2=0e0;
     string output;
+    int num1,num2;
 
     for(int ic=1;ic<=NRiteration;ic++){
 
       calcStressTensor();  //calc K and Q
-      // calcBoundaryForce();
+      //calcBoundaryForce();
       set_rhs_statics();
 
       PARDISO.set_CSR_value3D(Ku,element,numOfNode,numOfElm,inb);
@@ -92,8 +93,18 @@ bool muscularHydrostat::Muscle::NRscheme()
       corrector_statics(PARDISO.x,relaxation);
       // residual=line_search(PARDISO.x);
 
+      //find minimum
+      if(ic == 1) min1 = norm/norm0;
+      if(norm/norm0 <= min1){
+         min1 = norm/norm0;
+         num1 = ic;
+      }
+      
+      
       if(isnan(norm)){
         cout << "residual is nan. Exit..." << endl;
+        cout <<  "min NR iter = " << num1 << endl;
+        cout << "min norm/norm0 = " << min1 << endl;
         return true;
       }
 
@@ -109,11 +120,24 @@ bool muscularHydrostat::Muscle::NRscheme()
 
       printf("NR iter.=%d norm/norm0=%e\n",ic,norm/norm0);
 
-      if(ic%10==0){
-        output = outputDir + "/NR_"+to_string(ic/10)+".vtu";
-        export_vtu(output);
+      //find minimum
+      if(ic == 1) min2 = norm/norm0;
+      if(norm/norm0 <= min2){
+         min2 = norm/norm0;
+         num2 = ic;
+         if(min2 < 5e-3){
+          output = outputDir + "/min_NR_"+to_string(num2)+".vtu";
+          export_vtu(output);
+         }
       }
-      if(norm/norm0<NRtolerance) break;
+      //
+
+      //if(ic%10==0){
+      //  output = outputDir + "/NR_"+to_string(ic/10)+".vtu";
+      //  export_vtu(output);
+      //}
+      if(norm/norm0<NRtolerance)  break;
+       
       // if(test!=1 && ic>50) break;
     }
     return false;
@@ -204,8 +228,8 @@ void muscularHydrostat::Muscle::export_vtu(const string &file)
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</Cells>\n");
 
-  fprintf(fp,"<PointData Vectors=\"displacement[m/s]\">\n");
-  fprintf(fp,"<DataArray type=\"Float64\" Name=\"displacement[m/s]\" NumberOfComponents=\"3\" format=\"ascii\">\n");
+  fprintf(fp,"<PointData Vectors=\"displacement[m]\">\n");
+  fprintf(fp,"<DataArray type=\"Float64\" Name=\"displacement[m]\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfNode;i++){
     fprintf(fp,"%e %e %e\n",U(i,0),U(i,1),U(i,2));
   }

@@ -127,11 +127,11 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
   double initialStretchRatio;
   double F_initial[3][3],Ftmp[3][3];
   switch(element[ic].materialType){
-    case M0:
+    case static_cast<int>(MaterialType::M0):
       initialStretchRatio = Material[0].initialStretch;
       // initialStretchRatio = 1e0;
       break;
-    case M1:
+    case static_cast<int>(MaterialType::M1):
       initialStretchRatio = Material[1].initialStretch;
       // initialStretchRatio = 1e0;
       break;
@@ -244,10 +244,10 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
   double contraction[3][3]={};
   double contractionCoefficient;
   switch(element[ic].materialType){
-    case M0:
+    case static_cast<int>(MaterialType::M0):
       contractionCoefficient = Material[0].contractionCoefficient;
       break;
-    case M1:
+    case static_cast<int>(MaterialType::M1):
       contractionCoefficient = Material[1].contractionCoefficient;
       break;
     default:

@@ -29,20 +29,55 @@ class MaterialModel{
   double initialStretch;
 };
 
-typedef enum{
+enum class  MaterialType{
   M0 = 0,
   M1 = 1,
-  numOfMaterials
-}MaterialType;
+  M2 = 2
+};
+
+//enum class FiberGroup{
+//  GGa = 1,
+//  GGm = 2,
+//  GGp = 3,
+//  HG = 4,
+//  SG = 5,
+//  SLa = 6,
+//  SLp = 7,
+//  IL = 8,
+//  T = 9,
+//  V = 10
+//};
+enum class FiberGroup{
+  BD = 1,
+  GGa = 2,
+  GGm = 3,
+};
+
+class Fiber{
+  public:
+    double a0[3];
+    FiberGroup group;
+};
+
+class FibersInElement{
+  public:
+  std::vector<Fiber> fiber;
+};
 
 class Muscle : public Fem {
  public:
+  Muscle(){
+    //Material.resize(10);
+    Material.resize(2);
+  };
+  ~Muscle(){};
   TextParser tp;
   std::string outputDir,fileName;
 
   // int numOfBoundaryElm;
   // VECTOR1D<ElementType> boundaryElement;
-  VECTOR1D<MaterialModel> Material;
+  std::vector<MaterialModel> Material;
+  std::vector<FibersInElement> fibers;
 
  private:
   int dataNumber;
@@ -77,11 +112,12 @@ class Muscle : public Fem {
   void inputSolverInfo(TextParser &tp);
   void inputOutputInfo(TextParser &tp);
   void inputFiberInfo(TextParser &tp);
+  void inputFiberInfo_cal(TextParser &tp);
   void inputMaterialInfo(TextParser &tp);
   void inputDirichletInfo(TextParser &tp);
 
   void export_vtu(const std::string &file);
-
+  void export_vtu_fiber(const std::string &file);
 };
 
 }

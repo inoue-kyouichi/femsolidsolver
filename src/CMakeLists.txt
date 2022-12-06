@@ -13,6 +13,6 @@
 add_subdirectory(lib)
 add_subdirectory(softTissueMechanics)
 # add_subdirectory(shapeAndTopologyOptimization)
-# add_subdirectory(muscularHydrostat)
+add_subdirectory(muscularHydrostat)
 # add_subdirectory(smoothedFEM)
 add_subdirectory(tests)

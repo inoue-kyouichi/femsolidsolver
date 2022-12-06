@@ -70,6 +70,12 @@ void EYE_Mechanics::EyeMech::calcBoundaryPressure_spatialForm(const int ic,VECTO
 
 
   switch(boundaryElement[ic].meshType){
+    case VTK_TRIANGLE:
+      ShapeFunction2D::C2D3_N(N,gTri.point[0][0],gTri.point[0][1],gTri.point[0][2]);
+      ShapeFunction2D::C2D3_dNdr(dNdr,gTri.point[0][0],gTri.point[0][1],gTri.point[0][2]);
+      // cout << gTri.weight[0]*5e-1 << endl;
+      boundaryPressure_inGaussIntegral(Qb,N,dNdr,x_current,x_ref,numOfNodeInElm,boundaryPressure,gTri.weight[0]*5e-1,ic);
+      break;
     case VTK_QUAD:
       for(int i1=0;i1<2;i1++){
         for(int i2=0;i2<2;i2++){

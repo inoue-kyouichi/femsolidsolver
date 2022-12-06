@@ -37,6 +37,7 @@ target_link_libraries(${main_target} PRIVATE
   LS
   ${GLOG_LIBRARY}
   ${TP_LIBRARY}
+  iomp5
   ${MKL_LIBRARIES}
 )
 

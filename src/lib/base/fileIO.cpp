@@ -596,8 +596,8 @@ void fileIO::export_vtu(ARRAY2D<double> &x,const std::vector<ElementType> &eleme
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</Cells>\n");
 
-  fprintf(fp,"<PointData Vectors=\"displacement[m/s]\">\n");
-  fprintf(fp,"<DataArray type=\"Float64\" Name=\"displacement[m/s]\" NumberOfComponents=\"3\" format=\"ascii\">\n");
+  fprintf(fp,"<PointData Vectors=\"displacement[m]\">\n");
+  fprintf(fp,"<DataArray type=\"Float64\" Name=\"displacement[m]\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfNode;i++){
     fprintf(fp,"%e %e %e\n",U(i,0),U(i,1),U(i,2));
   }

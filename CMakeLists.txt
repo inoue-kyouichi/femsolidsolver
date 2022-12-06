@@ -83,14 +83,16 @@ find_package(Eigen REQUIRED)
 include_directories(${EIGEN_INCLUDE_DIR})
 
 # MKL
-set(MKL_ARCH "intel64")
-set(MKL_LINK "static")
-set(MKL_INTERFACE "lp64")
-set(MKL_THREADING "intel_thread")
-set(MKL_MPI "intelmpi")
-find_package(MKL REQUIRED C CXX)
+find_package(MKL)
 include_directories(${MKL_INCLUDE_DIR})
-MESSAGE(${MKL_LIBRARIES})
+# set(MKL_ARCH "intel64")
+# set(MKL_LINK "static")
+# set(MKL_INTERFACE "lp64")
+# set(MKL_THREADING "intel_thread")
+# set(MKL_MPI "intelmpi")
+# find_package(MKL REQUIRED C CXX)
+# include_directories(${MKL_INCLUDE_DIR})
+# MESSAGE(${MKL_LIBRARIES})
 
 #######
 # Sub Directories
