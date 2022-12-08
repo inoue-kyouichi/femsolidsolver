@@ -97,6 +97,7 @@ class Muscle : public Fem {
  private:
   bool NRscheme();
   void set_rhs_statics();
+  void set_forceddisplacement(int ic);
   void calcStressTensor_SantVenant_element_spatialForm(const int ic,ARRAY2D<double> &U_tmp,const bool option);
   double SantVenant_inGaussIntegral(ARRAY2D<double> &dNdr,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,
         ARRAY2D<double> &dNdx,const int numOfNodeInElm,const double weight,const int ic,const bool option);
@@ -115,6 +116,7 @@ class Muscle : public Fem {
   void inputFiberInfo_cal(TextParser &tp);
   void inputMaterialInfo(TextParser &tp);
   void inputDirichletInfo(TextParser &tp);
+  void forceddisplacement(TextParser &tp);
 
   void export_vtu(const std::string &file);
   void export_vtu_fiber(const std::string &file);

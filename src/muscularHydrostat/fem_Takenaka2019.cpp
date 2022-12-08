@@ -99,7 +99,7 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
 
   const double c10 = 1.037e3*1e-6; //[MPa]
   const double c20 = 4.86e2*1e-6; //[MPa]
-  const double af = 0.8e3*1e-6;//1.0e6*1e-3; //[MPa]
+  const double af = 0.9e3*1e-6;//1.0e6*1e-3; //[MPa]
   const double K = 1e5*1e-6; //[MPa]
   //const double c4 = 4.86e2*1e-3;
   //const double c3 = 1e5*1e-3;

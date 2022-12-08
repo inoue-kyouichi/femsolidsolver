@@ -4,24 +4,25 @@ Domain
   nodeFile      = "node_mm.dat"
   elementFile   = "element.dat"
   meshTypeFile   = "elementMeshType.dat"
-  fiberFile = "fiber_model_123_2.cal"
+  fiberFile = "fiber_model_123_4.cal"
   materialTypeFile = "material.dat"
   dirichletFile = "dirichlet.dat"
+  displacementFile = "displacement.dat"
   // innerSurfaceFile="innerSurface.dat"
 }
 
 Fibers{
   F1{
     contractionCoefficient = 0e0
-    initialStretch = 1e0
+    initialStretch = 1.1e0
   }
   F2{
-    contractionCoefficient = 1e0
-    initialStretch = 1.1e0
+    contractionCoefficient = 0e0
+    initialStretch = 1e0
   }
   F3{
-    contractionCoefficient = 1e0
-    initialStretch = 1.1e0
+    contractionCoefficient = 0e0
+    initialStretch = 1e0
   }
 }
 

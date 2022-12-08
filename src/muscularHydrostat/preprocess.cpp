@@ -24,6 +24,7 @@ void muscularHydrostat::Muscle::preprocess()
   inputMaterialParameters(tp);
 
   inputDirichletInfo(tp);
+  forceddisplacement(tp);
 
   inputSolverInfo(tp);
   inputOutputInfo(tp);
@@ -362,6 +363,59 @@ void muscularHydrostat::Muscle::inputDirichletInfo(TextParser &tp)
 
 }
 
+void muscularHydrostat::Muscle::forceddisplacement(TextParser &tp)
+{
+  string str,base_label,label,inputDir;
+  base_label = "/Domain";
+
+  label = base_label + "/inputDir";
+  if ( !tp.getInspectedValue(label,inputDir)){
+    cout << "data format is not set" << endl;
+    exit(0);
+  }
+  string D_file,Dvalue_file;
+  label = base_label + "/displacementFile";
+  if ( !tp.getInspectedValue(label, D_file)){
+    cout << label << " is not found" << endl;
+  }
+  D_file=inputDir+"/"+D_file;
+
+  int numOfData = fileIO::CountNumbersOfTextLines(D_file);
+  numOfFD = numOfData;
+  
+  int node;
+  string tmp,dtmp;
+
+  ifstream file(D_file);
+  if(!file){
+    cout << "Error:Input "<< D_file << " not found" << endl;
+    exit(1);
+  }
+
+  for(int i=0;i<numOfData;i++){
+    getline(file,str);
+    istringstream stream(str);
+    getline(stream,tmp,' ');
+    int number = stoi(tmp);
+    for(int j=0;j<3;j++){
+      getline(stream,tmp,' ');
+      ibd(number,j) = stoi(tmp);
+    }
+  }
+  FD.allocate(numOfFD,1);
+  FILE *fp;
+  if ((fp = fopen(D_file.c_str(), "r")) == NULL) {
+    cout << "file open error" << endl;
+    exit(1); 
+  }
+  for(int ic=0;ic<numOfData;ic++){
+    int n,xd,yd,zd;
+    fscanf(fp,"%d %d %d %d",&n, &xd, &yd, &zd);
+    FD(ic,0) = n;
+  }
+
+}
+
 
 // #################################################################
 /**
@@ -427,8 +481,8 @@ void muscularHydrostat::Muscle::export_vtu_fiber(const string &file)
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</Cells>\n");
 
-  fprintf(fp,"<PointData Vectors=\"displacement[m]\">\n");
-  fprintf(fp,"<DataArray type=\"Float64\" Name=\"displacement[m]\" NumberOfComponents=\"3\" format=\"ascii\">\n");
+  fprintf(fp,"<PointData Vectors=\"displacement[mm]\">\n");
+  fprintf(fp,"<DataArray type=\"Float64\" Name=\"displacement[mm]\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfNode;i++){
     fprintf(fp,"%e %e %e\n",U(i,0),U(i,1),U(i,2));
   }

@@ -77,6 +77,7 @@ bool muscularHydrostat::Muscle::NRscheme()
       calcStressTensor();  //calc K and Q
       //calcBoundaryForce();
       set_rhs_statics();
+      set_forceddisplacement(ic);
 
       PARDISO.set_CSR_value3D(Ku,element,numOfNode,numOfElm,inb);
       PARDISO.set_CSR_dirichlet_boundary_condition3D(numOfNode,ibd);
@@ -132,10 +133,10 @@ bool muscularHydrostat::Muscle::NRscheme()
       }
       //
 
-      //if(ic%10==0){
-      //  output = outputDir + "/NR_"+to_string(ic/10)+".vtu";
-      //  export_vtu(output);
-      //}
+      if(ic%10==0){
+        output = outputDir + "/NR_"+to_string(ic/10)+".vtu";
+        export_vtu(output);
+      }
       if(norm/norm0<NRtolerance)  break;
        
       // if(test!=1 && ic>50) break;
@@ -185,6 +186,36 @@ void muscularHydrostat::Muscle::set_rhs_statics()
   }
 }
 
+// #################################################################
+/**
+ * @brief set forced displacement
+ */
+void muscularHydrostat::Muscle::set_forceddisplacement(int ic)
+{
+  ARRAY2D<double> Forceddisplacement;
+  Forceddisplacement.allocate(numOfNode,3);
+  #pragma omp parallel for
+  for(int i=0;i<numOfNode;i++){
+    for(int j=0;j<3;j++) Forceddisplacement(i,j) = 0e0;
+  }
+
+  for(int i=0; i<numOfFD; i++){
+    int o = FD(i,0);
+    Forceddisplacement(o,0) = 0e0;  //forceddisplacement for x 0.1[mm]
+    Forceddisplacement(o,1) = -1e2;  //forceddisplacement for y 0.1[mm]
+    Forceddisplacement(o,2) = 0e0;  //forceddisplacement for z 0.1[mm]
+  }
+
+  if(ic == 1){
+    for(int i=0;i<numOfFD;i++){
+      int o = FD(i,0);
+      for(int j=0;j<3;j++){
+        RHS(o,j) = Forceddisplacement(o,j);
+      }
+    }
+  }
+
+}
 
 // #################################################################
 /**
@@ -228,8 +259,8 @@ void muscularHydrostat::Muscle::export_vtu(const string &file)
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</Cells>\n");
 
-  fprintf(fp,"<PointData Vectors=\"displacement[m]\">\n");
-  fprintf(fp,"<DataArray type=\"Float64\" Name=\"displacement[m]\" NumberOfComponents=\"3\" format=\"ascii\">\n");
+  fprintf(fp,"<PointData Vectors=\"displacement[mm]\">\n");
+  fprintf(fp,"<DataArray type=\"Float64\" Name=\"displacement[mm]\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfNode;i++){
     fprintf(fp,"%e %e %e\n",U(i,0),U(i,1),U(i,2));
   }

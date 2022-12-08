@@ -24,7 +24,7 @@
 
 class Domain{
 public:
-  int numOfNode, numOfElm, numOfDirichlet;
+  int numOfNode, numOfElm, numOfDirichlet,numOfFD;
   int numOfNeumann;
   int meshType;
   ARRAY2D<double> x,x0;
@@ -34,6 +34,8 @@ public:
   ARRAY2D<double> bn;
   VECTOR2D<int> inb;
   VECTOR2D<int> ieb;
+  ARRAY2D<int> FD;
+
 
   void set_geometry(const std::string &file1,const std::string &file2,const std::string &file3);
   void set_dirichlet(const std::string &D_file);
