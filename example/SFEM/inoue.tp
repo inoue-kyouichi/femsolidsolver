@@ -1,23 +1,23 @@
 Domain
 {
   inputDir   = "tongue"
-  nodeFile      = "node_mm.dat"
+  nodeFile      = "node_mm2.dat"
   elementFile   = "element.dat"
   meshTypeFile   = "elementMeshType.dat"
   fiberFile = "fiber_model_123_4.cal"
   materialTypeFile = "material.dat"
   dirichletFile = "dirichlet.dat"
-  displacementFile = "displacement.dat"
+  displacementFile = "bone3.dat"
   // innerSurfaceFile="innerSurface.dat"
 }
 
 Fibers{
   F1{
     contractionCoefficient = 0e0
-    initialStretch = 1.1e0
+    initialStretch = 1e0
   }
   F2{
-    contractionCoefficient = 0e0
+    contractionCoefficient = 1e0
     initialStretch = 1e0
   }
   F3{
@@ -42,6 +42,6 @@ Solver
   NR_tolerance = 4  //1e-4
   Restart =0 //0:no, 1:yes
   OMPnumThreads = 4 //2
-  relaxation=1e-1 //5e-1
+  relaxation=1e-3 //5e-1
 
 }

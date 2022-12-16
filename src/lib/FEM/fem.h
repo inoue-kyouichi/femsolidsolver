@@ -105,9 +105,9 @@ class Fem : public Domain{
 
   //fem_postprocessing.cpp
   public:
-  ARRAY1D<double> Mises;
-  ARRAY2D<double> AEigen_Ave,sigmaEigen_Ave;
-  ARRAY3D<double> AEigenVector_Ave,sigmaEigenVector_Ave;
+  ARRAY1D<double> Mises,Mises_strain;
+  ARRAY2D<double> AEigen_Ave,sigmaEigen_Ave,G_strainEigen_Ave;
+  ARRAY3D<double> AEigenVector_Ave,sigmaEigenVector_Ave,G_strainEigenVector_Ave;
 
   void calcEigen(const double (&A)[3][3],double (&AEigen)[3],double (&AEigenVector)[3][3]);
   void normalize(ARRAY3D<double> &AEigenVector_Ave,const int ic);

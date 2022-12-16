@@ -196,10 +196,13 @@ void Fem::allocate()
   volumeChangeRatio.allocate(numOfElm);
 
   Mises.allocate(numOfElm);
+  Mises_strain.allocate(numOfElm);
   AEigen_Ave.allocate(numOfElm,3);
   sigmaEigen_Ave.allocate(numOfElm,3);
+  G_strainEigen_Ave.allocate(numOfElm,3);
   AEigenVector_Ave.allocate(numOfElm,3,3);
   sigmaEigenVector_Ave.allocate(numOfElm,3,3);
+  G_strainEigenVector_Ave.allocate(numOfElm,3,3);
 
   U.allocate(numOfNode,3);
   RHS.allocate(numOfNode,3);

@@ -24,7 +24,7 @@ void muscularHydrostat::Muscle::preprocess()
   inputMaterialParameters(tp);
 
   inputDirichletInfo(tp);
-  forceddisplacement(tp);
+  //forceddisplacement(tp);
 
   inputSolverInfo(tp);
   inputOutputInfo(tp);

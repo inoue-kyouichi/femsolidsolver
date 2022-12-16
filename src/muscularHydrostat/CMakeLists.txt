@@ -28,6 +28,7 @@ target_sources(${main_target}
     fem_muscle_spatialForm.cpp
     fem_Takenaka2019.cpp
     preprocess.cpp
+    postProcess_NeoHookean_spatialForm.cpp
 )
 target_compile_options(${main_target} PUBLIC ${compile_options_tmp})
 

@@ -93,6 +93,9 @@ class Muscle : public Fem {
   void preprocess();
   void femSolidAnalysis();
   void calcStressTensor();
+  void postProcess_element_spatialForm(const int ic,ARRAY2D<double> &U_tmp,const bool option);
+  double postProcess_inGaussIntegral(const int &ic,
+const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRAY2D<double> &dNdr,const double weight,double (&stress)[3][3],const bool option, double (&G_strainEigen)[3],double (&G_strainEigenVector)[3][3]);
 
  private:
   bool NRscheme();
@@ -119,6 +122,7 @@ class Muscle : public Fem {
   void forceddisplacement(TextParser &tp);
 
   void export_vtu(const std::string &file);
+  void export_vtu_strain(const std::string &file,ARRAY2D<double> &strainEigen_ave,ARRAY3D<double> &strainEigenVector_ave,ARRAY1D<double> &Mises_strain);
   void export_vtu_fiber(const std::string &file);
 };
 
