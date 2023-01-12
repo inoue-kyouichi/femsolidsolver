@@ -24,11 +24,11 @@
 
 class Domain{
 public:
-  int numOfNode, numOfElm, numOfDirichlet,numOfFD;
+  int numOfNode, numOfElm, numOfDirichlet,numOfFD, numOfNode_hb, numOfElm_hb;
   int numOfNeumann;
   int meshType;
-  ARRAY2D<double> x,x0;
-  std::vector<ElementType> element,belement;
+  ARRAY2D<double> x,x0,x_hb;
+  std::vector<ElementType> element,belement,element_hb;
   ARRAY2D<int> ibd;
   ARRAY2D<double> bd;
   ARRAY2D<double> bn;

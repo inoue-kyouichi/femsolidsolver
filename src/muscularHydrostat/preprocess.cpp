@@ -15,6 +15,8 @@ void muscularHydrostat::Muscle::preprocess()
   inputDomainInfo(tp);
   allocate();
 
+  inputhyoidboneinfo(tp);
+
   fibers.resize(numOfElm);
   //fiberDirection_elm.allocate(numOfElm,3);
   inputFiberInfo_cal(tp);
@@ -24,7 +26,7 @@ void muscularHydrostat::Muscle::preprocess()
   inputMaterialParameters(tp);
 
   inputDirichletInfo(tp);
-  //forceddisplacement(tp);
+  //forceddisplacement(tp);   //Input for forced displacement
 
   inputSolverInfo(tp);
   inputOutputInfo(tp);
@@ -40,6 +42,51 @@ void muscularHydrostat::Muscle::preprocess()
   PARDISO.initialize(3*numOfNode);
   PARDISO.CSR_initialize(inb,numOfNode,3);
 }
+
+
+// #################################################################
+/**
+ * @brief solver information from TP file
+ */
+void muscularHydrostat::Muscle::inputhyoidboneinfo(TextParser &tp)
+{
+string str,base_label,label,inputDir;
+
+  base_label = "/hyoidbone";
+
+  label = base_label + "/inputDir";
+  if ( !tp.getInspectedValue(label,inputDir)){
+    cout << "data format is not set" << endl;
+    exit(0);
+  }
+  string file1,file2,file3,file4,file5;
+  label = base_label + "/nodeFile";
+  if ( !tp.getInspectedValue(label, file1)){
+    cout << label << " is not found" << endl;
+    exit(0);
+  }
+  label = base_label + "/elementFile";
+  if ( !tp.getInspectedValue(label,file2)){
+    cout << label << " is not found" << endl;
+    exit(0);
+  }
+  label = base_label + "/meshTypeFile";
+  if ( !tp.getInspectedValue(label,file3)){
+    cout << label << " is not found" << endl;
+    exit(0);
+  }
+
+  file1=inputDir+"/"+file1;
+  file2=inputDir+"/"+file2;
+  file3=inputDir+"/"+file3;
+
+  fileIO::read_geometry_node(x_hb,numOfNode_hb,file1);
+  fileIO::read_geometry_meshType(element_hb,numOfElm_hb,file3);
+  fileIO::read_geometry_element(element_hb,numOfElm_hb,file2);
+
+
+}
+
 
 // #################################################################
 /**

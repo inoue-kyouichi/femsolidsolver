@@ -66,11 +66,19 @@ void muscularHydrostat::Muscle::femSolidAnalysis()
     // }
   }
 
+  move_hyoid_bone();
+
   output = outputDir + "/test_strain"+".vtu";
   export_vtu_strain(output,G_strainEigen_Ave,G_strainEigenVector_Ave,Mises_strain);
 
   output = outputDir + "/test.vtu";
   export_vtu(output);
+
+  output = outputDir + "/hyoid_bone.vtu";
+  export_vtu_hyoidbone(x_hb,element_hb,numOfNode_hb,numOfElm_hb,output);
+
+  output = outputDir + "/extention_rate.vtu";
+  export_vtu_extention_rate(output,extention);
 
 }
 
@@ -90,7 +98,7 @@ bool muscularHydrostat::Muscle::NRscheme()
       calcStressTensor();  //calc K and Q
       //calcBoundaryForce();
       set_rhs_statics();
-      //set_forceddisplacement(ic);
+      //set_forceddisplacement(ic);  //Input for forced displacement
 
       PARDISO.set_CSR_value3D(Ku,element,numOfNode,numOfElm,inb);
       PARDISO.set_CSR_dirichlet_boundary_condition3D(numOfNode,ibd);
@@ -135,15 +143,15 @@ bool muscularHydrostat::Muscle::NRscheme()
       printf("NR iter.=%d norm/norm0=%e\n",ic,norm/norm0);
 
       //find minimum
-      if(ic == 1) min2 = norm/norm0;
-      if(norm/norm0 <= min2){
-         min2 = norm/norm0;
-         num2 = ic;
-         if(min2 < 5e-3){
-          output = outputDir + "/min_NR_"+to_string(num2)+".vtu";
-          export_vtu(output);
-         }
-      }
+      //if(ic == 1) min2 = norm/norm0;
+      //if(norm/norm0 <= min2){
+      //   min2 = norm/norm0;
+      //   num2 = ic;
+      //   if(min2 < 5e-3){
+      //    output = outputDir + "/min_NR_"+to_string(num2)+".vtu";
+      //    export_vtu(output);
+      //   }
+      //}
       //
 
       if(ic%10==0){
@@ -168,6 +176,10 @@ void muscularHydrostat::Muscle::calcStressTensor()
   stress_tensor_initialize();
 
   volume = 0e0;
+  extention.allocate(numOfElm);
+  for(int i=0; i<numOfElm; i++){
+    extention(i) = 0e0;
+  }
 
   #pragma omp parallel for
   for(int ic=0;ic<numOfElm;ic++){
@@ -228,6 +240,19 @@ void muscularHydrostat::Muscle::set_forceddisplacement(int ic)
     }
   }
 
+}
+
+// #################################################################
+/**
+ * @brief calc stress tensor
+ */
+void muscularHydrostat::Muscle::move_hyoid_bone()
+{
+  for(int i=0; i<numOfNode_hb; i++){
+    for(int j=0; j<3; j++){
+      x_hb(i,j) += U(4269,j); 
+    }
+  }
 }
 
 // #################################################################
@@ -363,6 +388,139 @@ void muscularHydrostat::Muscle::export_vtu_strain(const string &file,ARRAY2D<dou
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"equibalentStrain\" NumberOfComponents=\"1\" format=\"ascii\">\n");
   for(int i=0;i<numOfElm;i++){
     fprintf(fp,"%e\n",Mises_strain(i));
+  }
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"</CellData>\n");
+  fprintf(fp,"</Piece>");
+  fprintf(fp,"</UnstructuredGrid>");
+  fprintf(fp,"</VTKFile>");
+  fclose(fp);
+}
+
+// #################################################################
+/**
+ * @brief calc boundary conditions
+ * @param [in] stress
+ */
+void muscularHydrostat::Muscle::export_vtu_hyoidbone(ARRAY2D<double> &x,const std::vector<ElementType> &element,
+            const int &numOfNode,const int &numOfElm,const string &file)
+{
+  FILE *fp;
+  if ((fp = fopen(file.c_str(), "w")) == NULL) {
+    cout << file << " open error" << endl;
+    exit(1); 
+  }
+
+  fprintf(fp,"<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
+  fprintf(fp,"<UnstructuredGrid>\n");
+  fprintf(fp,"<Piece NumberOfPoints= \"%d\" NumberOfCells= \"%d\" >\n",numOfNode,numOfElm);
+  fprintf(fp,"<Points>\n");
+  fprintf(fp,"<DataArray type=\"Float64\" Name=\"Points\" NumberOfComponents=\"3\" format=\"ascii\">\n");
+  for(int i=0;i<numOfNode;i++){
+    fprintf(fp,"%e %e %e\n",x(i,0),x(i,1),x(i,2));
+  }
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"</Points>\n");
+  fprintf(fp,"<Cells>\n");
+  fprintf(fp,"<DataArray type=\"Int64\" Name=\"connectivity\" format=\"ascii\">\n");
+  for(int i=0;i<numOfElm;i++){
+    for(int j=0;j<element[i].node.size();j++) fprintf(fp,"%d ",element[i].node[j]);
+    fprintf(fp,"\n");
+  }
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"<DataArray type=\"Int64\" Name=\"offsets\" format=\"ascii\">\n");
+  int num=0;
+  for(int i=0;i<numOfElm;i++){
+    num += element[i].node.size();   
+    fprintf(fp,"%d\n",num);
+  }
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"<DataArray type=\"UInt8\" Name=\"types\" format=\"ascii\">\n");
+  for(int i=0;i<numOfElm;i++) fprintf(fp,"%d\n",element[i].meshType);
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"</Cells>\n");
+
+  //fprintf(fp,"<PointData Vectors=\"displacement[mm]\">\n");
+  //fprintf(fp,"<DataArray type=\"Float64\" Name=\"displacement[mm]\" NumberOfComponents=\"3\" format=\"ascii\">\n");
+  //for(int i=0;i<numOfNode;i++){
+  //  fprintf(fp,"%e %e %e\n",U(i,0),U(i,1),U(i,2));
+  //}
+  //fprintf(fp,"</DataArray>\n");
+  //fprintf(fp,"</PointData>\n");
+
+  //fprintf(fp,"<CellData Scalars=\"volumeChangeRatio\">\n");
+  //fprintf(fp,"<DataArray type=\"Float64\" Name=\"volumeChangeRatio\" NumberOfComponents=\"1\" format=\"ascii\">\n");
+  //for(int i=0;i<numOfElm;i++){
+  //  fprintf(fp,"%e\n",volumeChangeRatio(i));
+  //}
+  //fprintf(fp,"</DataArray>\n");
+  //fprintf(fp,"</CellData>\n");
+  fprintf(fp,"</Piece>");
+  fprintf(fp,"</UnstructuredGrid>");
+  fprintf(fp,"</VTKFile>");
+  fclose(fp);
+}
+
+// #################################################################
+/**
+ * @brief calc boundary conditions
+ * @param [in] stress
+ */
+void muscularHydrostat::Muscle::export_vtu_extention_rate(const string &file,ARRAY1D<double> &extention)
+{
+  FILE *fp;
+  if ((fp = fopen(file.c_str(), "w")) == NULL) {
+    cout << file << " open error" << endl;
+    exit(1); 
+  }
+
+  fprintf(fp,"<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
+  fprintf(fp,"<UnstructuredGrid>\n");
+  fprintf(fp,"<Piece NumberOfPoints= \"%d\" NumberOfCells= \"%d\" >\n",numOfNode,numOfElm);
+  fprintf(fp,"<Points>\n");
+  fprintf(fp,"<DataArray type=\"Float64\" Name=\"Points\" NumberOfComponents=\"3\" format=\"ascii\">\n");
+  for(int i=0;i<numOfNode;i++){
+    fprintf(fp,"%e %e %e\n",x(i,0),x(i,1),x(i,2));
+  }
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"</Points>\n");
+  fprintf(fp,"<Cells>\n");
+  fprintf(fp,"<DataArray type=\"Int64\" Name=\"connectivity\" format=\"ascii\">\n");
+  for(int i=0;i<numOfElm;i++){
+    for(int j=0;j<element[i].node.size();j++) fprintf(fp,"%d ",element[i].node[j]);
+    fprintf(fp,"\n");
+  }
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"<DataArray type=\"Int64\" Name=\"offsets\" format=\"ascii\">\n");
+  int num=0;
+  for(int i=0;i<numOfElm;i++){
+    num += element[i].node.size();
+    fprintf(fp,"%d\n",num);
+  }
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"<DataArray type=\"UInt8\" Name=\"types\" format=\"ascii\">\n");
+  for(int i=0;i<numOfElm;i++) fprintf(fp,"%d\n",element[i].meshType);
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"</Cells>\n");
+
+  fprintf(fp,"<PointData Vectors=\"displacement[mm]\">\n");
+  fprintf(fp,"<DataArray type=\"Float64\" Name=\"displacement[mm]\" NumberOfComponents=\"3\" format=\"ascii\">\n");
+  for(int i=0;i<numOfNode;i++){
+    fprintf(fp,"%e %e %e\n",U(i,0),U(i,1),U(i,2));
+  }
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"</PointData>\n");
+
+  fprintf(fp,"<CellData>");
+  fprintf(fp,"<DataArray type=\"Int64\" Name=\"Material\" NumberOfComponents=\"1\" format=\"ascii\">\n");
+  for(int i=0;i<numOfElm;i++){
+    fprintf(fp,"%d\n",element[i].materialType);
+  }
+
+fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"<DataArray type=\"Float64\" Name=\"extention_rate\" NumberOfComponents=\"1\" format=\"ascii\">\n");
+  for(int i=0;i<numOfElm;i++){
+    fprintf(fp,"%e\n",extention(i));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</CellData>\n");

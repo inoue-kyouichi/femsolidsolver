@@ -111,6 +111,7 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
 
   void calcStressTensor_Takenaka2019_element_spatialForm(const int ic,ARRAY2D<double> &U_tmp,const bool option);
   void Takenaka2019_inGaussIntegral(const int &ic,const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRAY2D<double> &dNdr,const double weight,double (&stress)[3][3],const bool mainLoop);
+  void move_hyoid_bone();
 
   void inputMaterialParameters(TextParser &tp);
   void inputSolverInfo(TextParser &tp);
@@ -120,10 +121,13 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
   void inputMaterialInfo(TextParser &tp);
   void inputDirichletInfo(TextParser &tp);
   void forceddisplacement(TextParser &tp);
+  void inputhyoidboneinfo(TextParser &tp);
 
   void export_vtu(const std::string &file);
   void export_vtu_strain(const std::string &file,ARRAY2D<double> &strainEigen_ave,ARRAY3D<double> &strainEigenVector_ave,ARRAY1D<double> &Mises_strain);
   void export_vtu_fiber(const std::string &file);
+  void export_vtu_hyoidbone(ARRAY2D<double> &x,const std::vector<ElementType> &element,const int &numOfNode,const int &numOfElm,const std::string &file);
+  void export_vtu_extention_rate(const std::string &file,ARRAY1D<double> &extention);
 };
 
 }

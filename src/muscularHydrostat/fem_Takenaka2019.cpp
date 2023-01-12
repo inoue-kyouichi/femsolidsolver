@@ -89,7 +89,7 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
   double elasticityTensor_ref[3][3][3][3],elasticityTensor_current[3][3][3][3],tangentCoefficient[3][3][3][3];
 
   //nearly-incompressible material
-  double pressure,dpressure,Siso[3][3],S_aniso[3][3],Sbar[3][3],P4[3][3][3][3],P4bar[3][3][3][3];
+  double pressure,dpressure,Siso[3][3],S_aniso[3][3],Sbar[3][3],P4[3][3][3][3],P4bar[3][3][3][3],P2[3][3];
   double invC_odot[3][3][3][3],C4iso[3][3][3][3],C4vol[3][3][3][3],C4bar[3][3][3][3],term2,term4,term4_2;
 
   //PDL
@@ -97,10 +97,10 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
   int fiberNum=0;
   double lambda;
 
-  const double c10 = 1.037e3*1e-6; //[MPa]
-  const double c20 = 4.86e2*1e-6; //[MPa]
-  const double af = 1.0e3*1e-6;//1.0e6*1e-3; //[MPa]
-  const double K = 1e5*1e-6; //[MPa]
+  const double c10 = 1.037e3*1e-6; //[Pa] 1.040e6*1e-6; 1.037e3*1e-6;
+  const double c20 = 4.86e2*1e-6; //[Pa] 4.90e5*1e-6; 4.86e2*1e-6;
+  const double af = 1.0e3*1e-6;//1.0e6*1e-3; //[Pa]
+  const double K = 1e5*1e-6; //[Pa] 1e5*1e-6;
   //const double c4 = 4.86e2*1e-3;
   //const double c3 = 1e5*1e-3;
   double a0[3],a[3];
@@ -169,19 +169,35 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
   //S_bar
   double I_C1 = C[0][0]+C[1][1]+C[2][2];
   double I_C1_mod = I_C1 * pow(J,-2e0/3e0);
+
+  //for(int i=0;i<3;i++){
+  //  for(int j=0;j<3;j++) P2[i][j]=I2[i][j]-1e0/3e0*I_C1*invC[i][j];
+  //}
+
   for(int i=0;i<3;i++){
     for(int j=0;j<3;j++) Sbar[i][j]=2e0*c10*I2[i][j] + 4e0*c20*(I_C1_mod-3e0)*I2[i][j];
     //for(int j=0;j<3;j++) Sbar[i][j]=2e0*c10*I2[i][j]; //an-iso
   }
 
-  //sigma an-isotropic term
-  /*Ic4bar=0e0;
-  for(int i=0;i<3;i++){
-    for(int j=0;j<3;j++) Ic4bar += a0[i]*C[i][j]*a0[j]*pow(J,-2e0/3e0);
-    // for(int j=0;j<3;j++) Ic4bar += a0[i]*C[i][j]*a0[j];
+  //extention_rate
+  Ic4bar=0e0;
+  for(int ik=0;ik<fibers[ic].fiber.size();ik++){
+    for(int i=0;i<3;i++){
+      //for(int j=0;j<3;j++) Ic4bar += a0[i]*C[i][j]*a0[j]*pow(J,-2e0/3e0);
+       for(int j=0;j<3;j++) Ic4bar += fibers[ic].fiber[ik].a0[i]*C[i][j]*fibers[ic].fiber[ik].a0[j];
+    }
   }
+  extention(ic) = sqrt(Ic4bar);
 
-  lambda=sqrt(Ic4bar);
+  //sigma an-isotropic term
+  //Ic4bar=0e0;
+  //for(int i=0;i<3;i++){
+  //  //for(int j=0;j<3;j++) Ic4bar += a0[i]*C[i][j]*a0[j]*pow(J,-2e0/3e0);
+  //   for(int j=0;j<3;j++) Ic4bar += a0[i]*C[i][j]*a0[j];
+  //}
+  
+
+  /*lambda=sqrt(Ic4bar);
   for(int i=0;i<3;i++){
     a[i]=0e0;
     for(int j=0;j<3;j++) a[i] += F[i][j] * a0[j];
@@ -209,6 +225,17 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
       }
     }
   }
+  //for(int i=0;i<3;i++){
+  //  for(int j=0;j<3;j++){
+  //    Siso[i][j]=0e0;
+  //  }
+  //}
+  //for(int i=0;i<3;i++){
+  //  for(int j=0;j<3;j++){
+  //    Siso[i][j]+=pow(J,-2e0/3e0)*P2[i][j]*Sbar[i][j];
+  //  }
+  //}
+
 
   //S_vol or hydrostatic pressure
   // pressure=c3*(J-1e0/J);            //

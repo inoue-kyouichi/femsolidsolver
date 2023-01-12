@@ -105,7 +105,7 @@ class Fem : public Domain{
 
   //fem_postprocessing.cpp
   public:
-  ARRAY1D<double> Mises,Mises_strain;
+  ARRAY1D<double> Mises,Mises_strain,extention;
   ARRAY2D<double> AEigen_Ave,sigmaEigen_Ave,G_strainEigen_Ave;
   ARRAY3D<double> AEigenVector_Ave,sigmaEigenVector_Ave,G_strainEigenVector_Ave;
 
